@@ -1,0 +1,36 @@
+ok so i want something to replace my little watch / playlist thing
+
+start simple - just keep track of a list that I can add / remove items from
+    and i can mark the items as complete
+
+what else?
+    easy stuff
+        add the ability to keep track of multiple lists
+        separate a single list into sections
+
+    medium stuff
+        add the ability to comment on items in the list
+        add like a profile to this whole thing
+
+    hard stuff
+        integrate csec into this somehow
+            maybe add some password protection
+            maybe add some encryption / decryption
+        give this a GUI
+
+what do i need for this?
+    an object representing a list
+        Backlog
+            items - list or set of items
+            addItem() - Item
+            removeItem() - Item
+            save() - void [save list to a file]
+            load() - void [create a list from a file (probably static)]
+            toString() - String
+    an object for an item on the list
+        Item
+            name - String
+            isComplete - boolean
+            markComplete() - void
+            markIncomplete() - void
+        should it be comparable?
