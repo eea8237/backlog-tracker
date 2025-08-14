@@ -7,16 +7,20 @@ what else?
     easy stuff
         add the ability to keep track of multiple lists
         separate a single list into sections
+        group items into a category
 
     medium stuff
         add the ability to comment on items in the list
         add like a profile to this whole thing
+        edit name of an item on the list
 
     hard stuff
         integrate csec into this somehow
             maybe add some password protection
             maybe add some encryption / decryption
         give this a GUI
+        add an incentive for completing tasks
+            like cookies or something
 
 what do i need for this?
     an object representing a list
@@ -26,11 +30,17 @@ what do i need for this?
             removeItem() - Item
             save() - void [save list to a file]
             load() - void [create a list from a file (probably static)]
+            contains() - boolean
             toString() - String
     an object for an item on the list
         Item
             name - String
             isComplete - boolean
+            series - String
+            medium - Category
             markComplete() - void
             markIncomplete() - void
+            toString() - String
         should it be comparable?
+    an enum to denote what medium each item in the list belongs to
+    an enum to denote what section each item in the list belongs to
