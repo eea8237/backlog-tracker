@@ -1,6 +1,7 @@
 package backlog;
 
 import java.util.*;
+import java.io.*;
 /**
  * A class to represent a backlog
  */
@@ -50,6 +51,33 @@ public class Backlog {
      */
     public void markComplete(Item item) {
         this.items.remove(item);
+    }
+
+    /**
+     * Convert a backlog into a file.
+     * @return true if save is successful, false otherwise
+     */
+    public void save() {
+        return;
+    }
+
+    /**
+     * Load a backlog from a file
+     * @param file the path of the file to be loaded
+     * @return a backlog to be loaded
+     */
+    public static Backlog load(String file) {
+        return null;
+
+    }
+
+    /**
+     * Get every item in a section from the set
+     * @param section
+     * @return
+     */
+    public Set<Item> getSection(Section section) {
+        return null;
     }
 
     @Override

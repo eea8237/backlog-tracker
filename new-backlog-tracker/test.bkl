@@ -1,0 +1,16 @@
+// format for a backlog file
+
+item1 name, SECTION, MEDIUM, SERIES, COMPLETION, OWNERSHIP
+Paper Mario: The Origami King, REPLAY, VIDEO_GAME, PAPER_MARIO, false, true
+
+[end]
+
+--SECTION 2
+
+--SECTION 3
+
+--SECTION 4
+
+--SECTION 5
+
+--SECTION 6

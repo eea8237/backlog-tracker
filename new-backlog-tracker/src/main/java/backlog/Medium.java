@@ -5,7 +5,7 @@ package backlog;
  */
 public enum Medium {
     // add toString for this class
-    CARTOONS,
+    CARTOON,
     ANIME,
     LIVE_ACTION_TV,
     ANIMATED_MOVIE,

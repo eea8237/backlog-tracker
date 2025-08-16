@@ -14,6 +14,9 @@ package backlog;
             markIncomplete() - void
             toString() - String
         should it be comparable?
+            if it is, sort by section, then by series, then in alphabetical order
+            sort by medium too
+            include sorting methods for every category maybe
  */
 public class Item {
     private final String name;
@@ -56,8 +59,36 @@ public class Item {
         return this.name;
     }
 
+    @Override
+    /**
+     * Hashes an item based on the traits that make it equal to another item
+     */
+    public int hashCode() {
+        String string = "[" + this.name + " - section: " + this.section + ", medium: " + this.medium + ", series: " + this.series + "]";
+        return string.hashCode();
+    }
+
     public String detailedString() {
-        return "[" + this.name + " - section: " + this.section + ", medium: " + this.medium + ", series: " + this.series + ", isComplete?: " + this.isComplete + ", is owned?: " + this.owned + "]";
+        return "[" + this.name + " - section: " + this.section + ", medium: " + this.medium + ", series: " + this.series + ", is complete?: " + this.isComplete + ", is owned?: " + this.owned + "]";
+    }
+
+    /**
+     * Convert a string into an item.
+     * Format: name, section, medium, series, isComplete, isOwned
+     * could also just be the first four
+     * if it's five items then it's the first four + isOwned
+     * @param string String to be converted.
+     * @return Item from the string.
+     */
+    public static Item stringToItem(String string) {
+        String[] tokens = string.split(", ");
+        if (tokens.length >= 4) {
+            String name = tokens[1];
+            Section section = 
+            Item item = null;
+
+
+        } else return null;
     }
 
     @Override

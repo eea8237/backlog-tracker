@@ -21,6 +21,8 @@ what else?
         give this a GUI
         add an incentive for completing tasks
             like cookies or something
+            what if i made it into a game
+                like an idle game or something
 
 what do i need for this?
     an object representing a list
