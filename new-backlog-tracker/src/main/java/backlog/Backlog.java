@@ -9,6 +9,9 @@ import java.io.*;
 public abstract class Backlog<T> {
     protected final String name;
     protected final List<Set<T>> items;
+    protected final int id;
+
+    protected static int BACKLOG_IDS = 0;
 
     public static final int WATCH_SECTION_INDEX = 0;
     public static final int REWATCH_SECTION_INDEX = 1;
@@ -23,11 +26,13 @@ public abstract class Backlog<T> {
      */
     public Backlog(String name) {
         this.name = name;
+        this.id = BACKLOG_IDS++;
         this.items = new LinkedList<Set<T>>();
         // each index in the items list is assigned to a section
         // 0 - watch, 1 - rewatch, 2 - play, 3 - replay, 4 - read, 5 - reread
         for (int i = 0; i < Section.values().length; i++) {
             this.items.add(new HashSet<T>());
+
         }
     }
 
@@ -93,5 +98,14 @@ public abstract class Backlog<T> {
         }
         // print the name, then each section line by line
         return this.name + sections;
+    }
+
+    /**
+     * Checks to see if a given section number is valid
+     * @param sectionNum the section to check
+     * @return true if the section number is for a valid section, false otherwise
+     */
+    public static boolean validSection(int sectionNum) {
+        return sectionNum > 0 && sectionNum < Section.values().length;
     }
 }

@@ -40,6 +40,50 @@ public class StringBacklog extends Backlog<String> {
      * @return true if save is successful, false otherwise
      */
     public void save() {
+        try {
+            // note to self - adding '/' at the start of the filename string makes java think this is an absolute path
+            File dir = new File("backlog-tracker/new-backlog-tracker/saves"); // probably still need to tweak this
+            if (dir.mkdirs()) System.out.println("Created save directory.");
+            else System.out.println("save directory was not created");
+
+            File savefile = new File(dir, "save" + this.id + ".bkl"); // add folder for saves
+            
+            if (savefile.createNewFile()) System.out.println("Created file: " + savefile.getName());
+            else System.out.println("File already exists: " + savefile.getName());
+            
+            PrintWriter writer = new PrintWriter(savefile);
+            
+            // clear the save file?
+            // or check to see if this information is already there
+            writer.println("[" + this.name + "]");
+            writer.flush();
+
+            for (int i = 0; i < this.items.size(); i++) {
+                Set<String> section = this.items.get(i);
+                // print the name of the section
+                writer.println("[" + Section.values()[i] + "]");
+                writer.flush();
+
+                // print each item in the section
+                for (String item : section) {
+                    writer.print("\"" + item + "\", ");
+                    writer.flush();
+                }
+                writer.print("\n");
+                writer.flush();
+            }
+            
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.getMessage();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+        // keep track of sections and the items in those sections
+        // items can be in comma-separated lists ending with a semi-colon?
+            // or sections are just separated by new lines
+        // maybe keep items in quotes so that if the title has a comma in it, that doesn't cause issues
+            // and include escape character for "
         return;
     }
 
@@ -64,32 +108,52 @@ public class StringBacklog extends Backlog<String> {
             while (!quit) {
                 System.out.print(">> ");
                 cmd = scanner.nextLine(); // format - "command, item, sectionNum"
-                if (cmd.equals("q")) {
-                    break;
-                }
                 String[] cmdTokens = cmd.split(", ");
                 String command = cmdTokens[0].toLowerCase();
-                String item = cmdTokens[1];
-                int sectionNum = Integer.parseInt(cmdTokens[2]); // probably have the user enter the section, not the number directly
+                String item = cmdTokens.length > 1 ? cmdTokens[1] : null;
+                int sectionNum = 0;
+                try {
+                    sectionNum = cmdTokens.length > 2 ? Integer.parseInt(cmdTokens[2]) : -1; // probably have the user enter the section, not the number directly
+                } catch (NumberFormatException e) {
+                    sectionNum = -1;
+                }
+                
                 switch (command) {
-                    case "h":
-                        System.out.println("commands - (h)elp, (a)dd, (r)emove, mark (c)omplete, mark (i)ncomplete, (q)uit");
-                        break;
                     case "a":
-                        backlog.addItem(item, sectionNum);
+                        if (item != null && Backlog.validSection(sectionNum)) backlog.addItem(item, sectionNum);
+                        else System.out.println("Invalid command: " + cmd);
                         break;
                     case "r":
-                        backlog.removeItem(item, sectionNum);
+                        if (item != null && Backlog.validSection(sectionNum)) backlog.removeItem(item, sectionNum);
+                        else System.out.println("Invalid command: " + cmd);
                         break;
                     case "c":
-                        backlog.markComplete(item, sectionNum);
+                        if (item != null && Backlog.validSection(sectionNum)) backlog.markComplete(item, sectionNum);
+                        else System.out.println("Invalid command: " + cmd);
                         break;
                     case "i":
-                        // backlog.markIncomplete(item, sectionNum);
+                        // if (item != null && Backlog.validSection(sectionNum)) backlog.markIncomplete(item, sectionNum);
+                        // else System.out.println("Invalid command: " + cmd);
                         System.out.println("whoops");
+                        break;
+
+                    // commands that don't follow the same format as the other commands
+                    case "h":
+                        System.out.println("commands - (h)elp, (a)dd, (r)emove, mark (c)omplete, mark (i)ncomplete, (s)ave, (l)oad, (q)uit");
+                        break;
+                    case "s":
+                        backlog.save();
+                        break;
+                    case "l":
+                        // this command probably also takes a filename
+                        // just treat the item as a filename
+                        StringBacklog.load("");
                         break;
                     case "q":
                         quit = true;
+                        break;
+                    default:
+                        System.out.println("Invalid command: " + cmd);
                         break;
                 }
                 System.out.println(backlog);
