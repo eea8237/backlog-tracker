@@ -53,5 +53,50 @@ public class StringBacklog extends Backlog<String> {
 
     }
 
+    public static void main(String[] args) {
+        // for testing out string backlog
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Enter name for backlog: ");
+            String cmd = scanner.nextLine();
+            Backlog<String> backlog = new StringBacklog(cmd);
+
+            boolean quit = false;
+            while (!quit) {
+                System.out.print(">> ");
+                cmd = scanner.nextLine(); // format - "command, item, sectionNum"
+                if (cmd.equals("q")) {
+                    break;
+                }
+                String[] cmdTokens = cmd.split(", ");
+                String command = cmdTokens[0].toLowerCase();
+                String item = cmdTokens[1];
+                int sectionNum = Integer.parseInt(cmdTokens[2]); // probably have the user enter the section, not the number directly
+                switch (command) {
+                    case "h":
+                        System.out.println("commands - (h)elp, (a)dd, (r)emove, mark (c)omplete, mark (i)ncomplete, (q)uit");
+                        break;
+                    case "a":
+                        backlog.addItem(item, sectionNum);
+                        break;
+                    case "r":
+                        backlog.removeItem(item, sectionNum);
+                        break;
+                    case "c":
+                        backlog.markComplete(item, sectionNum);
+                        break;
+                    case "i":
+                        // backlog.markIncomplete(item, sectionNum);
+                        System.out.println("whoops");
+                        break;
+                    case "q":
+                        quit = true;
+                        break;
+                }
+                System.out.println(backlog);
+                
+            }
+        }
+        
+    }
 
 }

@@ -87,6 +87,11 @@ public abstract class Backlog<T> {
 
     @Override
     public String toString() {
-        return this.name + ": " + this.items.toString();
+        String sections = "";
+        for (int i = 0; i < Section.values().length; i++) {
+            sections += "\n" + Section.values()[i] + ": " + this.items.get(i);
+        }
+        // print the name, then each section line by line
+        return this.name + sections;
     }
 }
