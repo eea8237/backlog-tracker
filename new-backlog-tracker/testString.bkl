@@ -1,0 +1,8 @@
+SECTION 1
+item 1
+[end]
+SECTION 2
+"item1","item2","item3"
+[end]
+SECTION 3
+"item, 1","item2","item \"3\""

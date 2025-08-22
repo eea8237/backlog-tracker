@@ -4,94 +4,89 @@ import java.util.*;
 import java.io.*;
 /**
  * A class to represent a backlog
+ * @author Esther Arimoro
  */
-/*
- * Backlog
-            items - list or set of items
-            addItem() - Item
-            removeItem() - Item
-            save() - void [save list to a file]
-            load() - void [create a list from a file (probably static)]
-            contains() - boolean
-            toString() - String
- */
-public class Backlog {
-    private final String name;
-    private final Set<Item> items;
+public abstract class Backlog<T> {
+    protected final String name;
+    protected final List<Set<T>> items;
+
+    public static final int WATCH_SECTION_INDEX = 0;
+    public static final int REWATCH_SECTION_INDEX = 1;
+    public static final int PLAY_SECTION_INDEX = 2;
+    public static final int REPLAY_SECTION_INDEX = 3;
+    public static final int READ_SECTION_INDEX = 4;
+    public static final int REREAD_SECTION_INDEX = 5;
 
     /**
      * Initiallize a backlog with a set of items and a name.
      * @param items
      */
-    public Backlog(String name, Set<Item> items) {
+    public Backlog(String name) {
         this.name = name;
-        this.items = items;
+        this.items = new LinkedList<Set<T>>();
+        // each index in the items list is assigned to a section
+        // 0 - watch, 1 - rewatch, 2 - play, 3 - replay, 4 - read, 5 - reread
+        for (int i = 0; i < Section.values().length; i++) {
+            this.items.add(new HashSet<T>());
+        }
     }
+
     
     /**
-     * Remove an item from the backlog.
+     * Add an item to the backlog.
      * @param item the name of the item to be added.
+     * @param sectionNum the section to add the item to
      */
-    public void addItem(Item item) {
-        if (this.items.add(item)) System.out.println("Added " + item);
+    public void addItem(T item, int sectionNum) {
+        this.items.get(sectionNum).add(item);
     }
 
     /**
      * Remove an item from the backlog.
      * @param item the name of the item to be removed.
+     * @param sectionNum the section the item should be removed from
      */
-    public void removeItem(Item item) {
-        // need to modify this to work with just a name maybe
-        if (this.items.remove(item)) System.out.println("Removed " + item);
+    public void removeItem(T item, int sectionNum) {
+        // if the item is in the specified section, remove the item
+        if (this.items.get(sectionNum).contains(item)) {
+            this.items.get(sectionNum).remove(item);
+        }
     }
 
     /**
      * Mark an item as complete.
      * @param item the item to be marked as complete.
+     * @param sectionNum the section of the item to be marked as complete
      */
-    public void markComplete(Item item) {
-        this.items.remove(item);
-    }
+    public abstract void markComplete(T item, int sectionNum); // use something similar to removing an item
 
     /**
      * Convert a backlog into a file.
      * @return true if save is successful, false otherwise
      */
-    public void save() {
-        return;
-    }
-
-    /**
-     * Load a backlog from a file
-     * @param file the path of the file to be loaded
-     * @return a backlog to be loaded
-     */
-    public static Backlog load(String file) {
-        return null;
-
-    }
+    public abstract void save();
 
     /**
      * Get every item in a section from the set
-     * @param section
-     * @return
+     * @param sectionNum the number of the section wanted
+     * @return the section requested
      */
-    public Set<Item> getSection(Section section) {
-        return null;
+    public Set<T> getSection(int sectionNum) {
+        return this.items.get(sectionNum);
+    }
+
+    /**
+     * See if a section contains an item
+     * @param item the item to check for
+     * @param sectionNum the section to search
+     * @return true if the item is in the section, false otherwise
+     */
+    public boolean contains(T item, int sectionNum) {
+        return this.items.get(sectionNum).contains(item);
     }
 
     @Override
     public String toString() {
         return this.name + ": " + this.items.toString();
-    }
-
-    public Item getItemFromString(String name) {
-        // create an item from a string
-        for (Item item : this.items) {
-            if (item.toString().equals(name)) {
-                return item;
-            }
-        } 
-        return null;
     }
 }

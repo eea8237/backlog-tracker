@@ -5,9 +5,9 @@ package backlog;
  */
 public enum Section {
     WATCH,
-    PLAY,
-    READ,
     REWATCH,
+    PLAY,
     REPLAY,
+    READ,
     REREAD;
 }
