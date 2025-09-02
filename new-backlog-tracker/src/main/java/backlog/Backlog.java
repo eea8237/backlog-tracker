@@ -25,15 +25,16 @@ public abstract class Backlog<T> {
      * @param items
      */
     public Backlog(String name) {
-        this.name = name;
-        this.id = BACKLOG_IDS++;
-        this.items = new LinkedList<Set<T>>();
-        // each index in the items list is assigned to a section
-        // 0 - watch, 1 - rewatch, 2 - play, 3 - replay, 4 - read, 5 - reread
+        this(name, BACKLOG_IDS++, new LinkedList<Set<T>>());
         for (int i = 0; i < Section.values().length; i++) {
             this.items.add(new HashSet<T>());
-
         }
+    }
+
+    public Backlog(String name, int id, List<Set<T>> items) {
+        this.name = name;
+        this.id = id;
+        this.items = items;
     }
 
     

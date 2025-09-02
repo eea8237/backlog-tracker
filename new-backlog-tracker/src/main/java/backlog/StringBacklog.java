@@ -16,7 +16,7 @@ import java.io.*;
             toString() - String
  */
 public class StringBacklog extends Backlog<String> {
-
+    public static final String SAVE_DIR = "backlog-tracker/new-backlog-tracker/saves"; // probably still need to tweak this
     /**
      * Initiallize a backlog with a set of items and a name.
      * @param items
@@ -42,7 +42,7 @@ public class StringBacklog extends Backlog<String> {
     public void save() {
         try {
             // note to self - adding '/' at the start of the filename string makes java think this is an absolute path
-            File dir = new File("backlog-tracker/new-backlog-tracker/saves"); // probably still need to tweak this
+            File dir = new File(SAVE_DIR);
             if (dir.mkdirs()) System.out.println("Created save directory.");
             else System.out.println("save directory was not created");
 
@@ -55,7 +55,7 @@ public class StringBacklog extends Backlog<String> {
             
             // clear the save file?
             // or check to see if this information is already there
-            writer.println("[" + this.name + "]");
+            writer.println("[" + this.name + "," + this.id + "]");
             writer.flush();
 
             for (int i = 0; i < this.items.size(); i++) {
@@ -93,6 +93,45 @@ public class StringBacklog extends Backlog<String> {
      * @return the backlog parsed from the file backlog
      */
     public static StringBacklog load(String filename) {
+        try (Scanner scanner = new Scanner(new File(SAVE_DIR + "/" + filename))) {
+            // special case for first line
+            String name = "";
+            int id = -1;
+            List<Set<String>> items = new LinkedList<Set<String>>(); // same as before
+
+            if (scanner.hasNext()) {
+                String identifier = scanner.nextLine().strip();
+                // remove ending brackets
+                identifier = identifier.substring(0, identifier.length());
+                String[] identifierTokens = identifier.split(",");
+                
+                name = identifierTokens[0];
+                id = Integer.parseInt(identifierTokens[1]);
+            }
+            // go through the sections 
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
+                if (line.equals("\n")) continue;
+                
+
+
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+        /*
+         * [git,0]
+         * [WATCH]
+         *
+         * [REWATCH]
+         * [PLAY]
+         * "vvv", "aaaa", 
+         * [REPLAY]
+         * 
+         * [READ]
+         * 
+         * [REREAD]
+         */
         return null;
 
     }
