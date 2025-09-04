@@ -15,14 +15,21 @@ import java.io.*;
             contains() - boolean
             toString() - String
  */
+
 public class StringBacklog extends Backlog<String> {
-    public static final String SAVE_DIR = "backlog-tracker/new-backlog-tracker/saves"; // probably still need to tweak this
+    public static final String[] INVALID_STRINGS = {"--", "\","};
+    // public static final String SAVE_DIR = "backlog-tracker/new-backlog-tracker/saves"; // probably still need to tweak this
+    public static final String SAVE_DIR = new File("new-backlog-tracker").getAbsolutePath() + "\\saves"; // figure out a way to handle file separator
     /**
-     * Initiallize a backlog with a set of items and a name.
+     * Initiallize a backlog with  and a name.
      * @param items
      */
     public StringBacklog(String name) {
         super(name);
+    }
+
+    public StringBacklog(String name, int id, List<Set<String>> items) {
+        super(name, id, items);
     }
 
     @Override
@@ -55,24 +62,24 @@ public class StringBacklog extends Backlog<String> {
             
             // clear the save file?
             // or check to see if this information is already there
-            writer.println("[" + this.name + "," + this.id + "]");
+            writer.println("--" + this.name + "," + this.id);
             writer.flush();
 
             for (int i = 0; i < this.items.size(); i++) {
                 Set<String> section = this.items.get(i);
                 // print the name of the section
-                writer.println("[" + Section.values()[i] + "]");
+                writer.println("--" + Section.values()[i]);
                 writer.flush();
 
                 // print each item in the section
                 for (String item : section) {
-                    writer.print("\"" + item + "\", ");
+                    writer.print("\"" + item + "\",");
                     writer.flush();
                 }
-                writer.print("\n");
+                writer.println();
                 writer.flush();
             }
-            
+
             writer.close();
         } catch (FileNotFoundException e) {
             e.getMessage();
@@ -84,25 +91,54 @@ public class StringBacklog extends Backlog<String> {
             // or sections are just separated by new lines
         // maybe keep items in quotes so that if the title has a comma in it, that doesn't cause issues
             // and include escape character for "
-        return;
+    }
+
+    /**
+     * Strip a line containing special data
+     * @param line
+     * @return
+     */
+    private static String stripLine(String line) {
+        return line.substring(2).strip();
+    }
+
+    /**
+     * get a list of string items from a string of text
+     * @param itemString the string to convert
+     * @return list of items
+     */
+    // we'll have some string in the format "aaa", "bbb", "ccc", 
+    private static Set<String> stringToSet(String itemString) {
+        String[] itemsTemp = itemString.split("\",");
+        Set<String> itemsSet = new HashSet<>();
+        
+        for (String item : itemsTemp) {
+            // strip this of its leading "
+            if (item.length() < 2) continue;
+            item = item.substring(1);
+            itemsSet.add(item);
+        }
+
+        return itemsSet;
     }
 
     /**
      * Load a backlog from a file
-     * @param file the path of the file to be loaded
+     * @param filename the path of the file to be loaded
      * @return the backlog parsed from the file backlog
      */
     public static StringBacklog load(String filename) {
         try (Scanner scanner = new Scanner(new File(SAVE_DIR + "/" + filename))) {
+            // if line starts with --, it's data that isn't an item
+
             // special case for first line
             String name = "";
             int id = -1;
             List<Set<String>> items = new LinkedList<Set<String>>(); // same as before
+            for (int i = 0; i < Section.values().length; i++) items.add(null);
 
             if (scanner.hasNext()) {
-                String identifier = scanner.nextLine().strip();
-                // remove ending brackets
-                identifier = identifier.substring(0, identifier.length());
+                String identifier = stripLine(scanner.nextLine()); // get rid of the first -- and any whitespace
                 String[] identifierTokens = identifier.split(",");
                 
                 name = identifierTokens[0];
@@ -112,94 +148,73 @@ public class StringBacklog extends Backlog<String> {
             while (scanner.hasNext()) {
                 String line = scanner.nextLine();
                 if (line.equals("\n")) continue;
-                
+                if (line.length() > 1 && line.charAt(0) == '-' && line.charAt(1) == '-') {
+                    // this isn't an item, it's a section header
+                    line = stripLine(line);
+                    Section section = Section.valueOf(line);
 
-
+                    // next line should be a list of items
+                    if (scanner.hasNext()) line = scanner.nextLine();
+                    else { // this is the last section, which is presumably empty, so... just add an empty set to that section
+                        items.set(Section.values().length-1, new HashSet<String>()); // this works but it feels sort of messy
+                        continue;
+                    }
+                    switch (section) {
+                        case WATCH:
+                            // is there a way to not have to hard code this index
+                            items.set(WATCH_SECTION_INDEX, stringToSet(line));
+                            break;
+                        case REWATCH:
+                            items.set(REWATCH_SECTION_INDEX, stringToSet(line));
+                            break;
+                        case PLAY:
+                            items.set(PLAY_SECTION_INDEX, stringToSet(line));
+                            break;
+                        case REPLAY:
+                            items.set(REPLAY_SECTION_INDEX, stringToSet(line));
+                            break;
+                        case READ:
+                            items.set(READ_SECTION_INDEX, stringToSet(line));
+                            break;
+                        case REREAD:
+                            items.set(REREAD_SECTION_INDEX, stringToSet(line));
+                            break;
+                        default:
+                            System.out.println("Invalid section.");
+                            break;
+                    }
+                }
             }
+            return new StringBacklog(name, id, items);
+        
         } catch (IOException e) {
             System.err.println(e.getMessage());
+            return null;
         }
         /*
-         * [git,0]
-         * [WATCH]
+         * --git,0
+         * --WATCH
          *
-         * [REWATCH]
-         * [PLAY]
-         * "vvv", "aaaa", 
-         * [REPLAY]
+         * --REWATCH
+         * --PLAY
+         * "vvv", "aaaa"
+         * --REPLAY
          * 
-         * [READ]
+         * --READ
          * 
-         * [REREAD]
+         * --REREAD
          */
-        return null;
-
     }
 
-    public static void main(String[] args) {
-        // for testing out string backlog
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.print("Enter name for backlog: ");
-            String cmd = scanner.nextLine();
-            Backlog<String> backlog = new StringBacklog(cmd);
-
-            boolean quit = false;
-            while (!quit) {
-                System.out.print(">> ");
-                cmd = scanner.nextLine(); // format - "command, item, sectionNum"
-                String[] cmdTokens = cmd.split(", ");
-                String command = cmdTokens[0].toLowerCase();
-                String item = cmdTokens.length > 1 ? cmdTokens[1] : null;
-                int sectionNum = 0;
-                try {
-                    sectionNum = cmdTokens.length > 2 ? Integer.parseInt(cmdTokens[2]) : -1; // probably have the user enter the section, not the number directly
-                } catch (NumberFormatException e) {
-                    sectionNum = -1;
-                }
-                
-                switch (command) {
-                    case "a":
-                        if (item != null && Backlog.validSection(sectionNum)) backlog.addItem(item, sectionNum);
-                        else System.out.println("Invalid command: " + cmd);
-                        break;
-                    case "r":
-                        if (item != null && Backlog.validSection(sectionNum)) backlog.removeItem(item, sectionNum);
-                        else System.out.println("Invalid command: " + cmd);
-                        break;
-                    case "c":
-                        if (item != null && Backlog.validSection(sectionNum)) backlog.markComplete(item, sectionNum);
-                        else System.out.println("Invalid command: " + cmd);
-                        break;
-                    case "i":
-                        // if (item != null && Backlog.validSection(sectionNum)) backlog.markIncomplete(item, sectionNum);
-                        // else System.out.println("Invalid command: " + cmd);
-                        System.out.println("whoops");
-                        break;
-
-                    // commands that don't follow the same format as the other commands
-                    case "h":
-                        System.out.println("commands - (h)elp, (a)dd, (r)emove, mark (c)omplete, mark (i)ncomplete, (s)ave, (l)oad, (q)uit");
-                        break;
-                    case "s":
-                        backlog.save();
-                        break;
-                    case "l":
-                        // this command probably also takes a filename
-                        // just treat the item as a filename
-                        StringBacklog.load("");
-                        break;
-                    case "q":
-                        quit = true;
-                        break;
-                    default:
-                        System.out.println("Invalid command: " + cmd);
-                        break;
-                }
-                System.out.println(backlog);
-                
-            }
+    /**
+     * Checks to see if a string has any invalid characters in it.
+     * @return true if the string entered doesn't have any invalid characters, false otherwise
+     */
+    public static Boolean validateName(String name) {
+        for (String str : INVALID_STRINGS) {
+            if (name.contains(str)) return false;
         }
-        
+        return true;
     }
 
 }

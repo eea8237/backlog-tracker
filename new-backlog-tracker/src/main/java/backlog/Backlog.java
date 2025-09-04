@@ -37,6 +37,10 @@ public abstract class Backlog<T> {
         this.items = items;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     
     /**
      * Add an item to the backlog.

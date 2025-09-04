@@ -5,14 +5,21 @@ package backlog;
  */
 public enum Medium {
     // add toString for this class
-    CARTOON,
-    ANIME,
-    LIVE_ACTION_TV,
-    ANIMATED_MOVIE,
-    LIVE_ACTION_MOVIE,
-    MANGA,
-    BOOK,
-    GUIDE,
-    WEBCOMIC,
-    VIDEO_GAME;
+    CARTOON("Cartoon"),
+    ANIME("Anime"),
+    LIVE_ACTION_TV("Live Action TV"),
+    ANIMATED_MOVIE("Animated Movie"),
+    LIVE_ACTION_MOVIE("Live Action Movie"),
+    MANGA("Manga"),
+    BOOK("Book"),
+    GUIDE("Guide"),
+    WEBCOMIC("Webcomic"),
+    VIDEO_GAME("Video Game");
+
+    private final String name;
+
+    private Medium(String name) {
+        this.name = name;
+    }
+
 }

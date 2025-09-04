@@ -1,13 +1,13 @@
-[git,0]
-[WATCH]
+--bkl,0
+--WATCH
 
-[REWATCH]
+--REWATCH
 
-[PLAY]
-"vvv", "aaaa", 
-[REPLAY]
+--PLAY
 
-[READ]
+--REPLAY
+"save editing because no one's going to stop me","fff",
+--READ
 
-[REREAD]
-
+--REREAD
+"dddd",
