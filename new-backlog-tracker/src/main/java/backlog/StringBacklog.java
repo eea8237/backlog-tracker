@@ -28,6 +28,10 @@ public class StringBacklog extends Backlog<String> {
         super(name);
     }
 
+    public StringBacklog(String name, int id) {
+        super(name, id);
+    }
+
     public StringBacklog(String name, int id, List<Set<String>> items) {
         super(name, id, items);
     }
@@ -51,9 +55,9 @@ public class StringBacklog extends Backlog<String> {
             // note to self - adding '/' at the start of the filename string makes java think this is an absolute path
             File dir = new File(SAVE_DIR);
             if (dir.mkdirs()) System.out.println("Created save directory.");
-            else System.out.println("save directory was not created");
+            // else System.out.println("save directory was not created");
 
-            File savefile = new File(dir, "save" + this.id + ".bkl"); // add folder for saves
+            File savefile = new File(dir, "save" + this.getId() + ".bkl"); // add folder for saves
             
             if (savefile.createNewFile()) System.out.println("Created file: " + savefile.getName());
             else System.out.println("File already exists: " + savefile.getName());
@@ -62,7 +66,7 @@ public class StringBacklog extends Backlog<String> {
             
             // clear the save file?
             // or check to see if this information is already there
-            writer.println("--" + this.name + "," + this.id);
+            writer.println("--" + this.getName() + "," + this.getId());
             writer.flush();
 
             for (int i = 0; i < this.items.size(); i++) {
@@ -210,11 +214,26 @@ public class StringBacklog extends Backlog<String> {
      * Checks to see if a string has any invalid characters in it.
      * @return true if the string entered doesn't have any invalid characters, false otherwise
      */
-    public static Boolean validateName(String name) {
+    private static Boolean validateName(String name) {
         for (String str : INVALID_STRINGS) {
             if (name.contains(str)) return false;
         }
         return true;
+    }
+
+    /**
+     * loop through input until it's validated
+     * @param input
+     */
+    public static String checkName(String input, Scanner scanner) {
+        boolean valid = validateName(input);
+        while (!valid) {
+            System.out.println("Name cannot contain " + Arrays.toString(INVALID_STRINGS));
+            System.out.print("Try again: ");
+            input = scanner.nextLine();
+            valid = validateName(input);
+        }
+        return input;
     }
 
 }

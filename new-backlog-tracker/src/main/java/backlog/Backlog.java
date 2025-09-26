@@ -7,9 +7,9 @@ import java.io.*;
  * @author Esther Arimoro
  */
 public abstract class Backlog<T> {
-    protected final String name;
+    private final String name;
     protected final List<Set<T>> items;
-    protected final int id;
+    private final int id;
 
     protected static int BACKLOG_IDS = 0;
 
@@ -25,7 +25,11 @@ public abstract class Backlog<T> {
      * @param items
      */
     public Backlog(String name) {
-        this(name, BACKLOG_IDS++, new LinkedList<Set<T>>());
+        this(name, BACKLOG_IDS++);
+    }
+
+    public Backlog(String name, int id) {
+        this(name, id, new LinkedList<Set<T>>());
         for (int i = 0; i < Section.values().length; i++) {
             this.items.add(new HashSet<T>());
         }
@@ -37,8 +41,13 @@ public abstract class Backlog<T> {
         this.items = items;
     }
 
+
     public String getName() {
         return this.name;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     
@@ -111,6 +120,6 @@ public abstract class Backlog<T> {
      * @return true if the section number is for a valid section, false otherwise
      */
     public static boolean validSection(int sectionNum) {
-        return sectionNum > 0 && sectionNum < Section.values().length;
+        return sectionNum >= 0 && sectionNum < Section.values().length;
     }
 }
